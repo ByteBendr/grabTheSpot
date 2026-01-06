@@ -28,7 +28,6 @@
             color: #fff;
         }
 
-        /* Animated grid background */
         body::before {
             content: '';
             position: fixed;
@@ -46,7 +45,6 @@
             z-index: 0;
         }
 
-        /* Static glowing spots with pulse animation */
         .glow-spot {
             position: fixed;
             border-radius: 50%;
@@ -689,7 +687,6 @@
             if (!trackId) return null;
             
             try {
-                // Try using Spotify's oEmbed API (no auth required)
                 const embedUrl = `https://open.spotify.com/oembed?url=https://open.spotify.com/track/${trackId}`;
                 const response = await fetch(embedUrl);
                 if (response.ok) {
@@ -744,7 +741,6 @@
                 imageUrl = imageUrl || extractValue(data.album.image) || extractValue(data.album.cover);
             }
             
-            // If no image found, try to get from Spotify directly
             if (!imageUrl || typeof imageUrl !== 'string') {
                 const trackId = getSpotifyTrackId(urlInput.value);
                 if (trackId) {
