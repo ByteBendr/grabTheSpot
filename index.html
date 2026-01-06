@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrabTheSpot - Because music should be yours</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            color: #fff;
+        }
+
+        /* Animated grid background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(29, 185, 84, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(29, 185, 84, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+            -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Static glowing spots with pulse animation */
+        .glow-spot {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .glow-spot-1 {
+            top: 10%;
+            left: 15%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(29, 185, 84, 0.15) 0%, transparent 70%);
+            animation: pulse1 4s ease-in-out infinite;
+        }
+
+        .glow-spot-2 {
+            top: 60%;
+            right: 10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(30, 215, 96, 0.12) 0%, transparent 70%);
+            animation: pulse2 5s ease-in-out infinite 1s;
+        }
+
+        .glow-spot-3 {
+            bottom: 15%;
+            left: 50%;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(29, 185, 84, 0.1) 0%, transparent 70%);
+            animation: pulse3 6s ease-in-out infinite 2s;
+        }
+
+        @keyframes pulse1 {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        @keyframes pulse2 {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.15); }
+        }
+
+        @keyframes pulse3 {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.08); }
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 40px 60px;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo i {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #1db954 0%, #1ed760 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 20px rgba(29, 185, 84, 0.5));
+        }
+
+        .logo-text h1 {
+            font-size: 2em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1db954 0%, #1ed760 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text p {
+            font-size: 0.75em;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 400;
+            margin-top: -2px;
+        }
+
+        .main-content {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 120px 60px 60px 60px;
+        }
+
+        .search-section {
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 60px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5em;
+            color: rgba(255, 255, 255, 0.4);
+            z-index: 2;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 28px 30px 28px 80px;
+            background: rgba(30, 30, 30, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 60px;
+            font-size: 1.1em;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(20px);
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #1db954;
+            background: rgba(30, 30, 30, 0.6);
+            box-shadow: 0 0 0 6px rgba(29, 185, 84, 0.1),
+                        0 10px 40px rgba(29, 185, 84, 0.2);
+            transform: translateY(-2px);
+        }
+
+        input[type="text"]::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+            font-weight: 300;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 25px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #1db954;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            box-shadow: 0 0 30px rgba(29, 185, 84, 0.3);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1em;
+            font-weight: 400;
+        }
+
+        .track-card {
+            display: none;
+            width: 100%;
+            max-width: 900px;
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            overflow: hidden;
+            animation: slideUp 0.6s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .track-card.active {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .track-image-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+            background: rgba(30, 30, 30, 0.5);
+        }
+
+        .track-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .track-image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, transparent 0%, rgba(20, 20, 20, 0.8) 100%);
+        }
+
+        .track-content {
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .track-title {
+            font-size: 2.2em;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+
+        .track-artist {
+            font-size: 1.2em;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 30px;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .track-details {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 35px;
+            flex-wrap: wrap;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .detail-label {
+            font-size: 0.75em;
+            color: rgba(255, 255, 255, 0.4);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .detail-value {
+            font-size: 0.95em;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 20px 40px;
+            background: linear-gradient(135deg, #1db954 0%, #1ed760 100%);
+            color: #fff;
+            text-decoration: none;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 8px 25px rgba(29, 185, 84, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(29, 185, 84, 0.5);
+        }
+
+        .download-btn:hover::before {
+            left: 100%;
+        }
+
+        .download-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .download-btn.loading {
+            background: rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+        }
+
+        .error {
+            display: none;
+            max-width: 800px;
+            padding: 20px 30px;
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            border-radius: 20px;
+            color: #ff6b6b;
+            text-align: center;
+            margin-top: 30px;
+            animation: shake 0.5s ease;
+            backdrop-filter: blur(10px);
+            font-weight: 500;
+        }
+
+        .error.active {
+            display: block;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .hint {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.9em;
+            margin-top: 30px;
+            font-weight: 300;
+        }
+
+        .hint span {
+            color: #1db954;
+            font-weight: 600;
+        }
+
+        @media (max-width: 1024px) {
+            .track-card.active {
+                grid-template-columns: 1fr;
+            }
+
+            .track-image-container {
+                height: 350px;
+            }
+
+            .track-image-overlay {
+                background: linear-gradient(to bottom, transparent 0%, rgba(20, 20, 20, 0.9) 100%);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 30px 30px;
+            }
+
+            .main-content {
+                padding: 100px 30px 40px 30px;
+            }
+
+            .logo i {
+                font-size: 2em;
+            }
+
+            .logo-text h1 {
+                font-size: 1.5em;
+            }
+
+            input[type="text"] {
+                font-size: 1em;
+                padding: 24px 24px 24px 70px;
+            }
+
+            .track-content {
+                padding: 35px;
+            }
+
+            .track-title {
+                font-size: 1.6em;
+            }
+
+            .track-artist {
+                font-size: 1em;
+            }
+
+            .track-details {
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="glow-spot glow-spot-1"></div>
+    <div class="glow-spot glow-spot-2"></div>
+    <div class="glow-spot glow-spot-3"></div>
+
+    <div class="header">
+        <div class="logo">
+            <i class="fa-brands fa-spotify"></i>
+            <div class="logo-text">
+                <h1>GrabTheSpot</h1>
+                <p>// Because music should be yours //</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="search-section">
+            <div class="input-wrapper">
+                <i class="fas fa-link input-icon"></i>
+                <input 
+                    type="text" 
+                    id="spotifyUrl" 
+                    placeholder="Paste your Spotify track link here..."
+                >
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <div class="loading-text"><i class="fas fa-compact-disc fa-spin"></i> Fetching your track...</div>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="track-card" id="trackCard">
+            <div class="track-image-container">
+                <img src="" alt="Track Cover" class="track-image" id="trackImage">
+                <div class="track-image-overlay"></div>
+            </div>
+            <div class="track-content">
+                <div class="track-title" id="trackTitle"></div>
+                <div class="track-artist" id="trackArtist"></div>
+                <div class="track-details" id="trackDetails"></div>
+                <button class="download-btn" id="downloadBtn">
+                    <i class="fas fa-download"></i>
+                    <span id="downloadText">Download Track</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="hint">
+            Paste a <span>Spotify link</span> and we'll handle the rest <i class="fas fa-sparkles"></i>
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = '8fc372849amsh19da4dbe1e89e1dp1652bdjsn109097d8f222';
+        const urlInput = document.getElementById('spotifyUrl');
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const trackCard = document.getElementById('trackCard');
+        const trackImage = document.getElementById('trackImage');
+        const trackTitle = document.getElementById('trackTitle');
+        const trackArtist = document.getElementById('trackArtist');
+        const trackDetails = document.getElementById('trackDetails');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const downloadText = document.getElementById('downloadText');
+
+        let currentTrackData = null;
+        let isDownloading = false;
+
+        urlInput.addEventListener('paste', async (e) => {
+            setTimeout(() => {
+                const url = urlInput.value.trim();
+                if (url && url.includes('open.spotify.com')) {
+                    fetchTrackInfo(url);
+                }
+            }, 100);
+        });
+
+        urlInput.addEventListener('input', () => {
+            const url = urlInput.value.trim();
+            if (url && url.includes('open.spotify.com') && url.length > 30) {
+                fetchTrackInfo(url);
+            }
+        });
+
+        downloadBtn.addEventListener('click', async () => {
+            if (isDownloading) return;
+            
+            const url = urlInput.value.trim();
+            if (url) {
+                await downloadTrack(url);
+            }
+        });
+
+        async function fetchTrackInfo(spotifyUrl) {
+            if (!spotifyUrl || !spotifyUrl.includes('open.spotify.com')) {
+                showError('Please enter a valid Spotify URL');
+                return;
+            }
+
+            loading.classList.add('active');
+            error.classList.remove('active');
+            trackCard.classList.remove('active');
+
+            try {
+                const encodedUrl = encodeURIComponent(spotifyUrl);
+                const apiUrl = `https://spotify-downloader12.p.rapidapi.com/Gettrack?spotify_url=${encodedUrl}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'x-rapidapi-host': 'spotify-downloader12.p.rapidapi.com',
+                        'x-rapidapi-key': API_KEY
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('API Response:', data);
+                
+                currentTrackData = data;
+                displayTrackInfo(data);
+
+            } catch (err) {
+                console.error('Fetch error:', err);
+                showError(`Failed to fetch track: ${err.message}`);
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        async function downloadTrack(spotifyUrl) {
+            if (isDownloading) return;
+
+            isDownloading = true;
+            downloadBtn.classList.add('loading');
+            downloadText.textContent = 'Preparing Download...';
+            error.classList.remove('active');
+
+            try {
+                const encodedUrl = encodeURIComponent(spotifyUrl);
+                const apiUrl = `https://spotify-downloader12.p.rapidapi.com/convert?urls=${encodedUrl}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'x-rapidapi-host': 'spotify-downloader12.p.rapidapi.com',
+                        'x-rapidapi-key': API_KEY,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        key1: 'value',
+                        key2: 'value'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Download API Response:', data);
+                
+                const downloadUrl = data.download_url || data.url || data.link;
+                
+                if (downloadUrl) {
+                    downloadText.textContent = 'Downloading...';
+                    
+                    // Create hidden anchor element to trigger download
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = `${currentTrackData?.title || 'track'}.mp3`;
+                    a.style.display = 'none';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    
+                    setTimeout(() => {
+                        downloadText.textContent = 'Download Complete!';
+                        setTimeout(() => {
+                            downloadText.textContent = 'Download Track';
+                            downloadBtn.classList.remove('loading');
+                            isDownloading = false;
+                        }, 1500);
+                    }, 1000);
+                } else {
+                    throw new Error('No download link available');
+                }
+
+            } catch (err) {
+                console.error('Download error:', err);
+                showError(`Download failed: ${err.message}`);
+                downloadText.textContent = 'Download Track';
+                downloadBtn.classList.remove('loading');
+                isDownloading = false;
+            }
+        }
+
+        function getSpotifyTrackId(url) {
+            const match = url.match(/track\/([a-zA-Z0-9]+)/);
+            return match ? match[1] : null;
+        }
+
+        async function fetchAlbumArtFromSpotify(trackId) {
+            if (!trackId) return null;
+            
+            try {
+                // Try using Spotify's oEmbed API (no auth required)
+                const embedUrl = `https://open.spotify.com/oembed?url=https://open.spotify.com/track/${trackId}`;
+                const response = await fetch(embedUrl);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.thumbnail_url) {
+                        return data.thumbnail_url;
+                    }
+                }
+            } catch (e) {
+                console.log('oEmbed failed:', e.message);
+            }
+
+            return null;
+        }
+
+        function extractValue(value) {
+            if (!value) return null;
+            if (typeof value === 'string') return value;
+            if (typeof value === 'number') return value;
+            if (Array.isArray(value)) {
+                if (value.length === 0) return null;
+                if (typeof value[0] === 'string') return value.join(', ');
+                if (typeof value[0] === 'object' && value[0].name) {
+                    return value.map(v => v.name).join(', ');
+                }
+                return value[0];
+            }
+            if (typeof value === 'object') {
+                if (value.name) return value.name;
+                if (value.title) return value.title;
+                if (value.text) return value.text;
+                if (value.url) return value.url;
+            }
+            return null;
+        }
+
+        async function displayTrackInfo(data) {
+            if (!data) {
+                showError('No track data received');
+                return;
+            }
+
+            console.log('Displaying track info:', data);
+
+            let imageUrl = extractValue(data.image) || 
+                          extractValue(data.thumbnail) || 
+                          extractValue(data.cover) || 
+                          extractValue(data.album_art) || 
+                          extractValue(data.artwork);
+            
+            if (data.album && typeof data.album === 'object') {
+                imageUrl = imageUrl || extractValue(data.album.image) || extractValue(data.album.cover);
+            }
+            
+            // If no image found, try to get from Spotify directly
+            if (!imageUrl || typeof imageUrl !== 'string') {
+                const trackId = getSpotifyTrackId(urlInput.value);
+                if (trackId) {
+                    trackImage.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400"%3E%3Crect fill="%231db954" width="400" height="400"/%3E%3Ctext fill="white" font-family="Arial" font-size="20" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3ELoading...%3C/text%3E%3C/svg%3E';
+                    
+                    const spotifyImage = await fetchAlbumArtFromSpotify(trackId);
+                    if (spotifyImage) {
+                        trackImage.src = spotifyImage;
+                    } else {
+                        trackImage.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400"%3E%3Crect fill="%231db954" width="400" height="400"/%3E%3Ctext fill="white" font-family="Arial" font-size="20" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3ENo Image%3C/text%3E%3C/svg%3E';
+                    }
+                } else {
+                    trackImage.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400"%3E%3Crect fill="%231db954" width="400" height="400"/%3E%3Ctext fill="white" font-family="Arial" font-size="20" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3ENo Image%3C/text%3E%3C/svg%3E';
+                }
+            } else {
+                trackImage.src = imageUrl;
+                trackImage.alt = extractValue(data.title) || extractValue(data.name) || 'Track cover';
+            }
+
+            const title = extractValue(data.title) || extractValue(data.name) || extractValue(data.track_name) || 'Unknown Title';
+            trackTitle.textContent = title;
+
+            const artist = extractValue(data.artist) || extractValue(data.artists) || extractValue(data.artist_name) || 'Unknown Artist';
+            trackArtist.innerHTML = `<i class="fas fa-user"></i> ${artist}`;
+
+            let detailsHTML = '';
+            
+            const album = extractValue(data.album) || extractValue(data.album_name);
+            if (album && typeof album === 'string') {
+                detailsHTML += `
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-compact-disc"></i> Album</div>
+                        <div class="detail-value">${album}</div>
+                    </div>
+                `;
+            }
+            
+            const duration = extractValue(data.duration) || extractValue(data.duration_ms) || extractValue(data.length);
+            if (duration) {
+                let formattedDuration = duration;
+                if (typeof duration === 'number') {
+                    const minutes = Math.floor(duration / 60000);
+                    const seconds = Math.floor((duration % 60000) / 1000);
+                    formattedDuration = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                } else if (typeof duration === 'string' && !duration.includes(':')) {
+                    const num = parseInt(duration);
+                    if (!isNaN(num)) {
+                        const minutes = Math.floor(num / 60000);
+                        const seconds = Math.floor((num % 60000) / 1000);
+                        formattedDuration = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    }
+                }
+                detailsHTML += `
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-clock"></i> Duration</div>
+                        <div class="detail-value">${formattedDuration}</div>
+                    </div>
+                `;
+            }
+            
+            const releaseDate = extractValue(data.release_date) || extractValue(data.release) || extractValue(data.year);
+            if (releaseDate && typeof releaseDate === 'string') {
+                detailsHTML += `
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-calendar"></i> Released</div>
+                        <div class="detail-value">${releaseDate}</div>
+                    </div>
+                `;
+            }
+            
+            if (detailsHTML) {
+                trackDetails.innerHTML = detailsHTML;
+                trackDetails.style.display = 'flex';
+            } else {
+                trackDetails.style.display = 'none';
+            }
+
+            trackCard.classList.add('active');
+        }
+
+        function showError(message) {
+            error.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            error.classList.add('active');
+            setTimeout(() => {
+                error.classList.remove('active');
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
